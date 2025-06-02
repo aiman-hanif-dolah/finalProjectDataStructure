@@ -1,4 +1,3 @@
-/* data.h */
 #ifndef DATA_H
 #define DATA_H
 
@@ -29,10 +28,10 @@ int deleteByName(const char *name);
 /* Sorts list on field (1=name,2=year,3=area,4=population); ascending if asc=1 */
 void sortList(int field, int ascending);
 
-/* Searches for a record by name (case-insensitive); returns pointer or NULL */
-struct State* searchByName(const char *name);
-
 /* Frees all nodes and resets list */
 void freeList(void);
+
+/* Merge sort helper */
+struct State* mergeSortList(struct State *head, int field, int ascending);
 
 #endif /* DATA_H */

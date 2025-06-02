@@ -7,7 +7,7 @@
   <!-- JetBrains Mono font from Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* CSS Variables for color theming */
+    /* Color theming variables */
     :root {
       --bg-start: #232526;
       --bg-end: #35394a;
@@ -25,31 +25,45 @@
       height: 100%;
       margin: 0;
       padding: 0;
-    }
-    body {
-      min-height: 100vh;
-      width: 100vw;
-      margin: 0;
       background: linear-gradient(120deg, var(--bg-start) 0%, var(--bg-end) 100%);
       color: var(--text-main);
       font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      transition: background 0.6s;
       overflow-x: hidden;
     }
+
+    /* Animated headline */
+    #project-title {
+      font-size: 2.5rem;
+      margin: 2rem 0 1rem;
+      text-align: center;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeIn 1.5s ease-out forwards, float 4s ease-in-out infinite 2s;
+      opacity: 0;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+
+    /* Console container */
     #console {
       width: 90vw;
       max-width: 1000px;
       min-width: 320px;
-      margin: 4vh auto;
+      margin-bottom: 2rem;
       box-shadow: 0 10px 40px rgba(60,60,90,0.3), 0 2px 10px rgba(0,0,0,0.05);
       border-radius: 14px;
       background: var(--console-bg);
       border: 1px solid #30344a;
-      padding: 2.5rem 2rem 1.5rem 2rem;
+      padding: 2.5rem 2rem 1.5rem;
       display: flex;
       flex-direction: column;
       min-height: 70vh;
@@ -58,13 +72,12 @@
       position: relative;
     }
     #output {
-      flex: 1 1 auto;
+      flex: 1;
       overflow-y: auto;
       white-space: pre-wrap;
       word-break: break-word;
       margin-bottom: 1rem;
       font-size: 1.06em;
-      background: transparent;
       letter-spacing: 0.01em;
       padding-right: 0.2em;
       scrollbar-width: thin;
@@ -87,26 +100,22 @@
       box-shadow: 0 1px 3px rgba(20,30,55,0.10);
     }
     #prompt {
-      flex-shrink: 0;
       margin-right: 0.8rem;
       color: var(--accent-secondary);
       font-weight: 700;
       font-size: 1.09em;
-      letter-spacing: 0.03em;
-      transition: color 0.2s;
       text-shadow: 0 0 4px #33000033;
     }
     #command {
-      flex-grow: 1;
+      flex: 1;
       background: #1e1e23;
       border: none;
       color: var(--text-main);
-      font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 1em;
       padding: 0.5em 0.7em;
       border-radius: 5px;
       outline: none;
-      transition: box-shadow 0.2s, background 0.3s;
       box-shadow: 0 2px 6px rgba(30,50,80,0.03);
       letter-spacing: 0.03em;
     }
@@ -114,16 +123,14 @@
       background: #23233c;
       box-shadow: 0 0 0 2px var(--accent-primary)80;
     }
-    /* Color for colored console output */
+    /* ANSI colors */
     .ansi-green  { color: #7af78e; font-weight: bold; }
     .ansi-cyan   { color: #62e7fa; font-weight: bold; }
     .ansi-yellow { color: var(--highlight); font-weight: bold; }
     .ansi-blue   { color: #7ec6f3; font-weight: bold; }
-    /* Extra highlight for headers (if needed) */
-    .ansi-header { color: var(--highlight); font-weight: bold; letter-spacing: 0.02em; }
-    /* Make links in output pretty (if any) */
+    /* Links */
     #output a { color: #71afff; text-decoration: underline; }
-    /* Signature styling */
+    /* Signature */
     #signature {
       position: absolute;
       bottom: 1rem;
@@ -131,29 +138,38 @@
       font-size: 0.85em;
       color: var(--signature-color);
     }
-    /* Portrait (mobile) adjustments */
+
+    /* Members section */
+    #members {
+      max-width: 800px;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    #members p {
+      margin: 0.3rem 0;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Responsive tweaks */
     @media (max-width: 650px), (orientation: portrait) {
-      #console {
-        width: 100vw;
-        margin: 2vh 0;
-        border-radius: 0;
-        max-height: 100vh;
-        padding: 2rem 1rem 1rem 1rem;
-      }
+      #project-title { font-size: 2rem; margin: 1.5rem 0; }
+      #console { margin: 1rem 0; border-radius: 0; padding: 2rem 1rem 1rem; }
       #output { font-size: 0.95em; }
       #prompt  { font-size: 1em; }
     }
-    /* Landscape (tablet/web) adjustments */
     @media (orientation: landscape) {
-      #console {
-        width: 80vw;
-        max-width: 1200px;
-      }
+      #console { width: 80vw; max-width: 1200px; }
     }
   </style>
 </head>
 <body>
 
+<!-- Animated project headline -->
+<h1 id="project-title">BIC10404 Data Structure Final Project</h1>
+
+<!-- Console emulator -->
 <div id="console">
   <div id="output">Loading WebAssembly, please wait...</div>
   <div id="input-line">
@@ -163,23 +179,29 @@
   <div id="signature">Developed by aihanif</div>
 </div>
 
+<!-- Members roster -->
+<div id="members">
+  <p>AIMAN HANIF BIN DOLAH – DI230101</p>
+  <p>NUR SYAHIRAH BINTI MOHAMAD ASHAARI – DI230067</p>
+  <p>NUR AMALIA SYAFIQAH BINTI MOHD ASRI – DI230064</p>
+  <p>MUHAMMAD IQBAL HAKIM BIN MOHD NIZAM – DI230106</p>
+  <p>WAN NUR SHAFAWATI BINTI WAN GHAZALI – DI230119</p>
+</div>
+
 <script>
   var outEl = null;
-  // Convert ANSI color codes to HTML <span> tags
   function ansiToHtml(text) {
     return text
-            .replace(/\x1b\[1;32m/g, '<span class="ansi-green">')   // Bold green
-            .replace(/\x1b\[1;36m/g, '<span class="ansi-cyan">')    // Bold cyan
-            .replace(/\x1b\[1;33m/g, '<span class="ansi-yellow">')  // Bold yellow
-            .replace(/\x1b\[1;34m/g, '<span class="ansi-blue">')    // Bold blue
-            .replace(/\x1b\[0m/g, '</span>');                       // Reset
+            .replace(/\x1b\[1;32m/g, '<span class="ansi-green">')
+            .replace(/\x1b\[1;36m/g, '<span class="ansi-cyan">')
+            .replace(/\x1b\[1;33m/g, '<span class="ansi-yellow">')
+            .replace(/\x1b\[1;34m/g, '<span class="ansi-blue">')
+            .replace(/\x1b\[0m/g, '</span>');
   }
   function appendToOutput(text) {
     if (!outEl) outEl = document.getElementById('output');
-    if (outEl) {
-      outEl.innerHTML += ansiToHtml(text) + '<br>';
-      outEl.scrollTop = outEl.scrollHeight;
-    }
+    outEl.innerHTML += ansiToHtml(text) + '<br>';
+    outEl.scrollTop = outEl.scrollHeight;
   }
   var Module = {
     print: appendToOutput,
@@ -193,14 +215,13 @@
     outEl.innerHTML = '';
     document.getElementById('input-line').style.display = 'flex';
 
-    // C function bindings
-    const initData     = Module.cwrap('initData',    'void', []);
-    const displayAll   = Module.cwrap('displayAll',  'void', []);
-    const sortList     = Module.cwrap('sortList',    'void', ['number','number']);
-    const insertEnd    = Module.cwrap('insertEnd',   'void', ['string','number','number','number']);
-    const js_delete    = Module.cwrap('js_delete',   'void', ['string']);
-    const js_search    = Module.cwrap('js_search',   'void', ['string']);
-    const generateCSV  = Module.cwrap('generateReport','void', []);
+    const initData       = Module.cwrap('initData',       'void', []);
+    const displayAll     = Module.cwrap('displayAll',     'void', []);
+    const sortList       = Module.cwrap('sortList',       'void', ['number','number']);
+    const insertEnd      = Module.cwrap('insertEnd',      'void', ['string','number','number','number']);
+    const js_delete      = Module.cwrap('js_delete',      'void', ['string']);
+    const js_search      = Module.cwrap('js_search',      'void', ['string']);
+    const generateReport = Module.cwrap('generateReport', 'void', []);
 
     let state = 'menu';
     let temp = {};
@@ -216,144 +237,74 @@
       Module.print('0. Exit');
     }
 
-    // Delay helper for sorted display
     function displayAndShowMenu() {
       displayAll();
       setTimeout(() => {
         state = 'menu';
         showMenu();
-      }, 120); // 120ms allows WASM print flush
+      }, 120);
     }
 
-    // Initialize and show the menu
     initData();
     showMenu();
 
-    // Input logic
     const cmdEl = document.getElementById('command');
     cmdEl.disabled = false;
     cmdEl.addEventListener('keydown', e => {
       if (e.key !== 'Enter') return;
       const v = cmdEl.value.trim();
       cmdEl.value = '';
-
-      if (state === 'menu') {
-        switch (v) {
-          case '1':
-            displayAndShowMenu();
-            break;
-          case '2':
-            Module.print('Sort by (1=Name,2=Year,3=Area,4=Population):');
-            state = 'sort_field';
-            break;
-          case '3':
-            Module.print('Enter name (or 0 to cancel):');
-            state = 'insert_name';
-            break;
-          case '4':
-            Module.print('Enter name to delete (or 0 to cancel):');
-            state = 'delete';
-            break;
-          case '5':
-            Module.print('Enter name to search (or 0 to cancel):');
-            state = 'search';
-            break;
-          case '6':
-            generateCSV();
-            showMenu();
-            break;
-          case '0':
-            Module.print('Exiting. Goodbye!');
-            cmdEl.disabled = true;
-            break;
-          default:
-            Module.print('Invalid choice. Try again.');
-            showMenu();
-        }
-      }
-      else if (state === 'sort_field') {
-        const f = parseInt(v,10);
-        if (![1,2,3,4].includes(f)) {
-          Module.print('Invalid field. Back to menu.');
-          showMenu();
-          state = 'menu';
-        } else {
-          temp.field = f;
-          Module.print('Order (1=Asc,2=Desc):');
-          state = 'sort_order';
-        }
-      }
-      else if (state === 'sort_order') {
-        const o = v==='1'?1: v==='2'?2:0;
-        if (!o) {
-          Module.print('Cancelled. Back to menu.');
-          state = 'menu';
-          showMenu();
-        } else {
-          sortList(temp.field, o===1);
-          displayAndShowMenu();
-        }
-      }
-      else if (state === 'insert_name') {
-        if (v === '0') {
-          Module.print('Cancelled.');
-          state = 'menu'; showMenu();
-        } else {
-          temp.name = v;
-          Module.print('Enter year:');
-          state = 'insert_year';
-        }
-      }
-      else if (state === 'insert_year') {
-        const y = parseInt(v,10);
-        if (isNaN(y)) {
-          Module.print('Invalid year. Cancelled.');
-          state = 'menu'; showMenu();
-        } else {
-          temp.year = y;
-          Module.print('Enter area:');
-          state = 'insert_area';
-        }
-      }
-      else if (state === 'insert_area') {
-        const a = parseFloat(v);
-        if (isNaN(a)) {
-          Module.print('Invalid area. Cancelled.');
-          state = 'menu'; showMenu();
-        } else {
-          temp.area = a;
-          Module.print('Enter population:');
-          state = 'insert_pop';
-        }
-      }
-      else if (state === 'insert_pop') {
-        const p = parseInt(v,10);
-        if (isNaN(p)) {
-          Module.print('Invalid population. Cancelled.');
-        } else {
-          insertEnd(temp.name, temp.year, temp.area, p);
-          Module.print('Record inserted.');
-        }
-        state = 'menu';
-        showMenu();
-      }
-      else if (state === 'delete') {
-        if (v === '0') {
-          Module.print('Cancelled.');
-        } else {
-          js_delete(v);
-        }
-        state = 'menu';
-        showMenu();
-      }
-      else if (state === 'search') {
-        if (v === '0') {
-          Module.print('Cancelled.');
-        } else {
-          js_search(v);
-        }
-        state = 'menu';
-        showMenu();
+      switch (state) {
+        case 'menu':
+          if (v === '1') displayAndShowMenu();
+          else if (v === '2') { Module.print('Sort by (1=Name,2=Year,3=Area,4=Population):'); state = 'sort_field'; }
+          else if (v === '3') { Module.print('Enter name (or 0 to cancel):'); state = 'insert_name'; }
+          else if (v === '4') { Module.print('Enter name to delete (or 0 to cancel):'); state = 'delete'; }
+          else if (v === '5') { Module.print('Enter name to search (or 0 to cancel):'); state = 'search'; }
+          else if (v === '6') { generateReport(); showMenu(); }
+          else if (v === '0') { Module.print('Exiting. Goodbye!'); cmdEl.disabled = true; }
+          else { Module.print('Invalid choice. Try again.'); showMenu(); }
+          break;
+        case 'sort_field':
+          const f = parseInt(v, 10);
+          if (![1,2,3,4].includes(f)) { Module.print('Invalid field. Back to menu.'); state = 'menu'; showMenu(); }
+          else { temp.field = f; Module.print('Order (1=Asc,2=Desc):'); state = 'sort_order'; }
+          break;
+        case 'sort_order':
+          const o = v==='1'?1:v==='2'?2:0;
+          if (!o) { Module.print('Cancelled. Back to menu.'); state = 'menu'; showMenu(); }
+          else { sortList(temp.field, o===1); displayAndShowMenu(); }
+          break;
+        case 'insert_name':
+          if (v==='0') { Module.print('Cancelled.'); state='menu'; showMenu(); }
+          else { temp.name = v; Module.print('Enter year:'); state = 'insert_year'; }
+          break;
+        case 'insert_year':
+          const y = parseInt(v,10);
+          if (isNaN(y)) { Module.print('Invalid year. Cancelled.'); state='menu'; showMenu(); }
+          else { temp.year = y; Module.print('Enter area:'); state='insert_area'; }
+          break;
+        case 'insert_area':
+          const a = parseFloat(v);
+          if (isNaN(a)) { Module.print('Invalid area. Cancelled.'); state='menu'; showMenu(); }
+          else { temp.area = a; Module.print('Enter population:'); state='insert_pop'; }
+          break;
+        case 'insert_pop':
+          const p = parseInt(v,10);
+          if (isNaN(p)) { Module.print('Invalid population. Cancelled.'); }
+          else { insertEnd(temp.name, temp.year, temp.area, p); Module.print('Record inserted.'); }
+          state='menu'; showMenu();
+          break;
+        case 'delete':
+          if (v==='0') Module.print('Cancelled.');
+          else js_delete(v);
+          state='menu'; showMenu();
+          break;
+        case 'search':
+          if (v==='0') Module.print('Cancelled.');
+          else js_search(v);
+          state='menu'; showMenu();
+          break;
       }
     });
   };

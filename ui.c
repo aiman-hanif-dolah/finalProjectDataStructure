@@ -140,23 +140,15 @@ void promptDelete(int lang) {
 /* Search submenu */
 void promptSearch(int lang) {
     char name[50];
-    struct State *res;
     if (lang == 1) printf("Enter state name to search (0 to cancel): ");
     else           printf("Masukkan nama negeri untuk cari (0 untuk batalkan): ");
     readString("", name, sizeof(name));
     if (strcmp(name, "0") == 0) return;
 
-    res = searchByName(name);
-    if (res) {
-        if (lang == 1) printf("Record found:\n");
-        else           printf("Rekod dijumpai:\n");
+    if (lang == 1)
+        printf("Search results (partial match, case-insensitive):\n");
+    else
+        printf("Keputusan carian (padanan separa, tidak sensitif huruf):\n");
 
-        printf("\033[1;32m%-15s  %-6s  %-10s  %10s\n\033[0m",
-               "Name", "Year", "Area(km2)", "Population");
-        printf("\033[1;36m%-15s\033[0m  %-6d  %10.1f  %10ld\n",
-               res->name, res->year, res->area, res->population);
-    } else {
-        if (lang == 1) printf("Record not found.\n");
-        else           printf("Rekod tidak dijumpai.\n");
-    }
+    js_search(name); // uses your strcasestr-based search, prints all matches
 }

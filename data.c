@@ -41,23 +41,23 @@ void insertEnd(const char *name, int year, double area, long population) {
 /* Hardcode 16 Malaysian states and territories */
 void initData(void) {
     printf("initData CALLED!\n");
-    /* Entries: name, creation year, area(km2), population */
-    insertEnd("Johor",            1528, 19166.0, 4009670L);
-    insertEnd("Kedah",            1136, 9425.0,  2071900L);
-    insertEnd("Kelantan",         1267, 15040.0, 1812300L);
-    insertEnd("Melaka",           1400, 1660.0,   933000L);
-    insertEnd("Pahang",           1470, 35825.0, 1688000L);
-    insertEnd("Perak",            1528, 21005.0, 2503000L);
-    insertEnd("Selangor",         1766, 8104.0,  6412000L);
-    insertEnd("Negeri Sembilan",  1773, 6624.0,  1117000L);
-    insertEnd("Pulau Pinang",     1786, 1048.0,  1767000L);
-    insertEnd("Terengganu",       1724, 13035.0, 1149000L);
-    insertEnd("Sabah",            1963, 73631.0, 3580000L);
-    insertEnd("Sarawak",          1841,124450.0, 2818000L);
-    insertEnd("Kuala Lumpur",     1974,   243.0, 1793000L);
-    insertEnd("Labuan",           1984,    92.0,   99000L);
-    insertEnd("Putrajaya",        2001,    49.0,  109000L);
-    insertEnd("Perlis",           1947,   810.0,  255000L);
+    // Entries: name, creation year, area(km2), population
+    insertEnd("Johore",          1528, 19166.0,   4009670L);
+    insertEnd("Kelantan",        1267, 15040.0,   1812300L);
+    insertEnd("Sabah",           1963, 73631.0,   3580000L);
+    insertEnd("Perak",           1528, 21005.0,   2503000L);
+    insertEnd("Kedah",           1136, 9425.0,    2071900L);
+    insertEnd("Malacca",         1400, 1660.0,     933000L);
+    insertEnd("Putrajaya",       2001, 49.0,       109000L);
+    insertEnd("Pahang",          1470, 35825.0,   1688000L);
+    insertEnd("Perlis",          1947, 810.0,      255000L);
+    insertEnd("Labuan",          1984, 92.0,        99000L);
+    insertEnd("Negeri Sembilan", 1773, 6624.0,    1117000L);
+    insertEnd("Sarawak",         1841, 124450.0,  2818000L);
+    insertEnd("Penang",          1786, 1048.0,    1767000L);
+    insertEnd("Selangor",        1766, 8104.0,    6412000L);
+    insertEnd("Terengganu",      1724, 13035.0,   1149000L);
+    insertEnd("Kuala Lumpur",    1974, 243.0,     1793000L);
 }
 
 /* Deletes node by exact name match (case-sensitive) */
@@ -76,57 +76,26 @@ int deleteByName(const char *name) {
     return 0;
 }
 
-/* Bubble-sort style on linked list */
 void sortList(int field, int ascending) {
-    if (!head || !head->next) return;
-    int swapped;
-    do {
-        swapped = 0;
-        struct State *ptr = head;
-        while (ptr->next) {
-            int cmp = 0;
-            switch (field) {
-                case 1: cmp = strcmp(ptr->name, ptr->next->name); break;
-                case 2: cmp = ptr->year - ptr->next->year;        break;
-                case 3: cmp = (ptr->area > ptr->next->area) ? 1 : (ptr->area < ptr->next->area) ? -1 : 0; break;
-                case 4: cmp = (ptr->population > ptr->next->population) ? 1 : (ptr->population < ptr->next->population) ? -1 : 0; break;
-                default: break;
-            }
-            if ((ascending && cmp > 0) || (!ascending && cmp < 0)) {
-                /* Swap payload */
-                char  tmpName[50];
-                int   tmpYear;
-                double tmpArea;
-                long  tmpPop;
-                strcpy(tmpName, ptr->name);
-                tmpYear    = ptr->year;
-                tmpArea    = ptr->area;
-                tmpPop     = ptr->population;
-                strcpy(ptr->name,       ptr->next->name);
-                ptr->year      = ptr->next->year;
-                ptr->area      = ptr->next->area;
-                ptr->population= ptr->next->population;
-                strcpy(ptr->next->name, tmpName);
-                ptr->next->year       = tmpYear;
-                ptr->next->area       = tmpArea;
-                ptr->next->population = tmpPop;
-                swapped = 1;
-            }
-            ptr = ptr->next;
-        }
-    } while (swapped);
+    head = mergeSortList(head, field, ascending);
 }
 
 /* Case-insensitive search */
-struct State* searchByName(const char *name) {
+// Print all matches for substring search
+void searchByPartialName(const char *query) {
     struct State *cur = head;
+    int found = 0;
     while (cur) {
-        if (strcasecmp(cur->name, name) == 0) {
-            return cur;
+        // strcasestr is GNU/POSIX, for Windows use your own case-insensitive strstr
+        if (strcasestr(cur->name, query) != NULL) {
+            printf("%-17s %-8d %-12.1f %-12ld\n", cur->name, cur->year, cur->area, cur->population);
+            found = 1;
         }
         cur = cur->next;
     }
-    return NULL;
+    if (!found) {
+        printf("No matching state or territory found.\n");
+    }
 }
 
 /* Free entire list */

@@ -1,9 +1,10 @@
 /* helpers.c */
 
-#include <stdio.h>      /* FILE, fopen, fprintf, printf */
-#include <stdlib.h>     /* system, EXIT_FAILURE */
-#include <string.h>     /* strcpy, snprintf, strcspn */
-#include <limits.h>     /* PATH_MAX */
+#include <stdio.h>      // FILE, fopen, fprintf, printf
+#include <stdlib.h>     // system, EXIT_FAILURE
+#include <string.h>     // strcpy, snprintf, strcspn
+#include <limits.h>
+#include <ctype.h>
 
 #ifdef _WIN32
   #include <direct.h>   /* _getcwd */
@@ -13,12 +14,85 @@
 #endif
 
 #include "helpers.h"
+
+#include <stddef.h>
+
 #include "data.h"       /* for head and struct State */
 
 /* Fallback if PATH_MAX isn't defined */
 #ifndef PATH_MAX
   #define PATH_MAX 260
 #endif
+
+char *strcasestr(const char *haystack, const char *needle) {
+    if (!*needle)
+        return (char *)haystack;
+    for (; *haystack; ++haystack) {
+        const char *h = haystack;
+        const char *n = needle;
+        while (*h && *n && tolower((unsigned char)*h) == tolower((unsigned char)*n)) {
+            ++h;
+            ++n;
+        }
+        if (!*n)
+            return (char *)haystack;
+    }
+    return NULL;
+}
+
+int compareStates(struct State *a, struct State *b, int field, int ascending) {
+    int cmp = 0;
+    switch (field) {
+        case 1: cmp = strcasecmp(a->name, b->name); break;
+        case 2: cmp = a->year - b->year; break;
+        case 3: cmp = (a->area < b->area) ? -1 : (a->area > b->area) ? 1 : 0; break;
+        case 4: cmp = (a->population < b->population) ? -1 : (a->population > b->population) ? 1 : 0; break;
+        default: cmp = 0;
+    }
+    return ascending ? cmp : -cmp;
+}
+
+struct State* mergeSortedLists(struct State *a, struct State *b, int field, int ascending) {
+    if (!a) return b;
+    if (!b) return a;
+    struct State *result = NULL;
+
+    if (compareStates(a, b, field, ascending) <= 0) {
+        result = a;
+        result->next = mergeSortedLists(a->next, b, field, ascending);
+    } else {
+        result = b;
+        result->next = mergeSortedLists(a, b->next, field, ascending);
+    }
+    return result;
+}
+
+
+void splitList(struct State *source, struct State **front, struct State **back) {
+    struct State *slow = source;
+    struct State *fast = source->next;
+    while (fast) {
+        fast = fast->next;
+        if (fast) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+    *front = source;
+    *back = slow->next;
+    slow->next = NULL;
+}
+
+
+struct State* mergeSortList(struct State *head, int field, int ascending) {
+    if (!head || !head->next) return head;
+    struct State *a, *b;
+    splitList(head, &a, &b);
+    a = mergeSortList(a, field, ascending);
+    b = mergeSortList(b, field, ascending);
+    return mergeSortedLists(a, b, field, ascending);
+}
+
 
 /* Discard leftover input until newline */
 void clearInputBuffer(void) {
@@ -129,16 +203,23 @@ void js_delete(const char *name) {
     }
 }
 
-/* Wrapper for C searchByName(), prints the one record or “not found” */
 void js_search(const char *name) {
-    struct State *r = searchByName(name);
-    if (r) {
-        printf("\033[1;32m%-15s  %-6s  %-10s  %10s\n\033[0m", "Name", "Year", "Area(km2)", "Population");
-        printf("\033[1;36m%-15s\033[0m  %-6d  %10.1f  %10ld\n",
-               r->name, r->year, r->area, r->population);
-    } else {
+    struct State *cur = head;
+    int found = 0;
+    // Print header once if any match found
+    while (cur) {
+        // Use strcasestr for case-insensitive partial match
+        if (strcasestr(cur->name, name) != NULL) {
+            if (!found) {
+                printf("\033[1;32m%-15s  %-6s  %-10s  %10s\n\033[0m", "Name", "Year", "Area(km2)", "Population");
+            }
+            printf("\033[1;36m%-15s\033[0m  %-6d  %10.1f  %10ld\n",
+                   cur->name, cur->year, cur->area, cur->population);
+            found = 1;
+        }
+        cur = cur->next;
+    }
+    if (!found) {
         printf("Record not found.\n");
     }
 }
-
-
